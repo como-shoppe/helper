@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como_shoppe 蝦皮推廣助手</title>
+    <style>
+        :root {
+            --primary-color: #ff424f;
+            --bg-color: #f6f6f6;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 22px;
+            margin: 0 0 6px 0;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+        /* 頁籤切換 */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: -2px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* 表單元件 */
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        button.btn-submit {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button.btn-submit:hover {
+            opacity: 0.9;
+        }
+        /* 搜尋結果列表 */
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .product-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 6px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+        .product-info {
+            flex: 1;
+        }
+        .product-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .product-btn {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 6px 12px;
+            background: #fff0f0;
+            color: var(--primary-color);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Como_shoppe</h1>
+        <p>蝦皮推廣助手與優惠搜尋</p>
+    </div>
+
+    <!-- 頁籤按鈕 -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('converter')">連結轉換器</button>
+        <button class="tab-btn" onclick="switchTab('search')">找商品優惠</button>
+    </div>
+
+    <!-- 頁籤一：連結轉換器 -->
+    <div id="converter" class="tab-content active">
+        <label for="urls">蝦皮網址（一次最多 5 個，每行一個）：</label>
+        <textarea id="urls" rows="5" placeholder="貼上蝦皮商品或活動網址..."></textarea>
+        <button class="btn-submit" onclick="convertLinks()">產生推廣連結</button>
+        
+        <div id="converter-result" style="margin-top: 16px;"></div>
+    </div>
+
+    <!-- 頁籤二：搜尋商品優惠 -->
+    <div id="search" class="tab-content">
+        <label for="keyword">商品關鍵字：</label>
+        <input type="text" id="keyword" placeholder="例如：衛生紙、濕紙巾">
+        <button class="btn-submit" onclick="searchOffers()">搜尋高分潤優惠</button>
+
+        <div id="search-result" style="margin-top: 16px;"></div>
+    </div>
+</div>
+
+<script>
+    // 切換頁籤
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // 連結轉換功能（待接 API）
+    function convertLinks() {
+        const input = document.getElementById('urls').value.trim();
+        const resultDiv = document.getElementById('converter-result');
+        
+        if (!input) {
+            alert('請先貼上蝦皮網址！');
+            return;
+        }
+
+        resultDiv.innerHTML = '<p style="color:#666;">轉換中...</p>';
+
+        // 模擬 API 轉換流程 (拿到 App Key & Secret 後替換為真實 API 呼叫)
+        setTimeout(() => {
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            let output = '<strong>轉換成功：</strong><br><br>';
+            lines.forEach((url, idx) => {
+                output += `<div style="background:#f0f0f0; padding:8px; border-radius:6px; margin-bottom:8px; word-break:break-all; font-size:13px;">
+                    連結 ${idx + 1}：<br>
+                    <a href="${url}" target="_blank" style="color:#ff424f;">https://s.shopee.tw/demo_${idx + 1}</a>
+                </div>`;
+            });
+            resultDiv.innerHTML = output;
+        }, 800);
+    }
+
+    // 搜尋優惠功能（待接 GraphQL API）
+    function searchOffers() {
+        const keyword = document.getElementById('keyword').value.trim();
+        const resultDiv = document.getElementById('search-result');
+
+        if (!keyword) {
+            alert('請輸入關鍵字，例如「衛生紙」');
+            return;
+        }
+
+        resultDiv.innerHTML = '<p style="color:#666;">搜尋高分潤優惠中...</p>';
+
+        // 模擬 GraphQL API 回傳結果 (拿到憑證後替換為真實 GraphQL 查詢)
+        setTimeout(() => {
+            resultDiv.innerHTML = `
+                <div class="product-card">
+                    <div class="product-img" style="background:#eee; text-align:center; line-height:70px; font-size:24px;">🧻</div>
+                    <div class="product-info">
+                        <div class="product-title">【蝦皮直營】${keyword} 優惠特惠組 150抽/包</div>
+                        <div class="product-price">$299 <span style="font-size:12px; color:#888;">(預估佣金 10%)</span></div>
+                        <a href="#" class="product-btn" onclick="alert('點擊複製專屬分潤網址')">複製專屬帶貨連結</a>
+                    </div>
+                </div>
+            `;
+        }, 800);
+    }
+</script>
+
+</body>
+</html>
+
