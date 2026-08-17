@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Como_shoppe 預算選品助手</title>
+    <title>Como_shoppe 優惠特賣選品助手</title>
     <style>
         :root {
             --primary-color: #ff424f;
@@ -57,7 +57,6 @@
             font-size: 14px;
             margin-bottom: 12px;
         }
-        /* 快速預算標籤 */
         .budget-tags {
             display: flex;
             gap: 8px;
@@ -86,10 +85,29 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .price-range input {
             margin-bottom: 0;
+        }
+        /* 特賣勾選框與排序 */
+        .filter-options {
+            background: #fff8f8;
+            border: 1px dashed var(--primary-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .filter-options label {
+            margin-bottom: 0;
+            cursor: pointer;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         button.btn-submit {
             width: 100%;
@@ -113,6 +131,18 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            position: relative;
+        }
+        .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
         }
         .product-info {
             flex: 1;
@@ -122,6 +152,7 @@
             font-weight: bold;
             margin-bottom: 4px;
             color: #333;
+            padding-right: 40px;
         }
         .product-price {
             color: var(--primary-color);
@@ -146,12 +177,12 @@
 <div class="container">
     <div class="header">
         <h1>Como_shoppe</h1>
-        <p>熱門優惠與預算選品搜尋</p>
+        <p>熱門特賣與預算選品搜尋</p>
     </div>
 
     <div>
-        <label for="keyword">商品關鍵字：</label>
-        <input type="text" id="keyword" placeholder="例如：衛生紙、行動電源">
+        <label for="keyword">商品關鍵字（可不填，留空查全站特賣）：</label>
+        <input type="text" id="keyword" placeholder="例如：衛生紙、行動電源，或留空">
 
         <label>快速選擇預算：</label>
         <div class="budget-tags">
@@ -168,14 +199,21 @@
             <input type="number" id="maxPrice" placeholder="最高金額">
         </div>
 
-        <button class="btn-submit" onclick="searchOffers()">搜尋符合預算的商品</button>
+        <!-- 特賣篩選選項 -->
+        <div class="filter-options">
+            <label for="onlySale">
+                <input type="checkbox" id="onlySale" checked>
+                🔥 只看限時特賣 / 大額折扣
+            </label>
+        </div>
+
+        <button class="btn-submit" onclick="searchOffers()">搜尋符合條件的特賣商品</button>
 
         <div id="search-result"></div>
     </div>
 </div>
 
 <script>
-    // 快速套用預算
     function setBudget(min, max, btn) {
         document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -185,32 +223,27 @@
     }
 
     function searchOffers() {
-        const keyword = document.getElementById('keyword').value.trim();
+        const keyword = document.getElementById('keyword').value.trim() || '熱門品項';
         const minPrice = document.getElementById('minPrice').value.trim();
         const maxPrice = document.getElementById('maxPrice').value.trim();
+        const onlySale = document.getElementById('onlySale').checked;
         const resultDiv = document.getElementById('search-result');
 
-        if (!keyword) {
-            alert('請先輸入關鍵字！');
-            return;
-        }
+        let saleText = onlySale ? '【限時特賣】' : '';
+        let priceText = (minPrice || maxPrice) ? `（預算：$${minPrice || 0} ~ $${maxPrice || '不限'}）` : '';
 
-        let priceText = '不限價格';
-        if (minPrice || maxPrice) {
-            priceText = `$${minPrice || 0} ~ $${maxPrice || '不限'}`;
-        }
+        resultDiv.innerHTML = `<p style="color:#666; text-align:center; margin-top:16px;">搜尋${saleText}「${keyword}」${priceText} 中...</p>`;
 
-        resultDiv.innerHTML = `<p style="color:#666; text-align:center; margin-top:16px;">搜尋「${keyword}」（預算：${priceText}）高分潤商品中...</p>`;
-
-        // 模擬 API 查詢結果
+        // 模擬 API 搜尋回傳
         setTimeout(() => {
-            const displayPrice = maxPrice ? Math.floor(maxPrice * 0.9) : (minPrice ? minPrice : '199');
+            const displayPrice = maxPrice ? Math.floor(maxPrice * 0.85) : (minPrice ? minPrice : '150');
             resultDiv.innerHTML = `
                 <div class="product-card">
-                    <div style="font-size:32px; padding:0 8px;">🎁</div>
+                    ${onlySale ? '<div class="badge">限時折殺</div>' : ''}
+                    <div style="font-size:32px; padding:0 8px;">🔥</div>
                     <div class="product-info">
-                        <div class="product-title">【蝦皮熱銷】${keyword} 預算促銷組</div>
-                        <div class="product-price">$${displayPrice} <span style="font-size:12px; color:#888;">(預估分潤 10%)</span></div>
+                        <div class="product-title">【蝦皮特賣】${keyword} 限時爆款促銷</div>
+                        <div class="product-price">$${displayPrice} <span style="font-size:12px; color:#888;">(預估分潤 12%)</span></div>
                         <a href="#" class="product-btn" onclick="alert('已複製推廣連結！')">複製帶貨連結</a>
                     </div>
                 </div>
